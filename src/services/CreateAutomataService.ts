@@ -6,6 +6,7 @@ interface AutomataRequest {
   name: string;
   description: string;
   automata: Object;
+  authorId: number;
 }
 
 class CreateAutomataService {
@@ -13,20 +14,24 @@ class CreateAutomataService {
     name,
     description,
     automata,
+    authorId,
   }: AutomataRequest): Promise<Automata> {
-    const author = userRepository.findOne({
+    const author = await userRepository.findOne({
       where: {
-        id: 1,
+        id: authorId,
       },
     });
-    
-    console.log(author);
-    
-    const source = JSON.stringify(automata);
+
+    if (!author) throw new Error("Author not found");
+
+    // TODO: Upload automata to storage
+    const source = "https://api.npoint.io/86994ad0b1e6757e0e90";
+
     const newAutomata = await automataRepository.create({
       name,
       description,
       source,
+      author,
     });
 
     return await automataRepository.save(newAutomata);

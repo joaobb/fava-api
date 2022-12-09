@@ -5,18 +5,18 @@ import { CreateAutomataService } from "../services/CreateAutomataService";
 class CreateAutomataController {
   async handle(request: Request, response: Response) {
     const { name, description, automata } = request.body;
-
-    console.log({name, description});
+    const authorId = request.userId;
 
     try {
       const createAutomataService = new CreateAutomataService();
       const result = await createAutomataService.execute({
-          name,
+        name,
         description,
-        automata
+        automata,
+        authorId,
       });
 
-      return response.status(201).json(result);
+      return response.status(201).json({ id: result.id });
     } catch (error: any) {
       return response.status(400).json(error.message);
     }

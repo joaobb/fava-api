@@ -1,6 +1,7 @@
 // import { UserRepository } from "../repositories";
 import { compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
+import { userRepository } from "../repositories/userRepository";
 
 interface UserRequest {
   email: string;
@@ -9,24 +10,28 @@ interface UserRequest {
 
 export class SessionService {
   async execute({ email, password }: UserRequest) {
-    console.log({ email, password });
-    // const repository = UserRepository();
-    //
-    // const user = await repository.findOne({ where: { email } });
-    //
-    // if (!user) throw new Error("User does not exists");
-    //
-    // const passwordMatch = await compare(password, user.password);
-    //
-    // if (!passwordMatch) throw new Error("Email or Password is incorrect");
-    //
-    // if (!process.env.SECRET_JWT)
-    //   throw new Error("Email or Password is incorrect");
-    //
-    // const token = sign({}, process.env.SECRET_JWT, {
-    //   subject: user.id,
-    // });
+    const user = await userRepository.findOne({ where: { email } });
 
-    return { token: 1 };
+    if (!user) throw new Error("Email or Password is incorrect");
+
+    const passwordMatch = await compare(password, user.password);
+
+    if (!passwordMatch) throw new Error("Email or Password is incorrect");
+
+    if (!process.env.JWT_SECRET)
+      throw new Error("Email or Password is incorrect");
+
+    const token = sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        subject: String(user.id),
+      }
+    );
+
+    return { access_token: token };
   }
 }

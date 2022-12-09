@@ -1,16 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-export interface PaginatedRequest extends Request {
-  offset?: number;
-  pageSize?: number;
-}
-
 function paginate() {
-  return async (
-    request: PaginatedRequest,
-    response: Response,
-    next: NextFunction
-  ) => {
+  return async (request: Request, response: Response, next: NextFunction) => {
     const { "content-range": contentRange } = request.headers;
 
     const match = contentRange?.match(/(\d+)-(\d+)/);
