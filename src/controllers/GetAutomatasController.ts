@@ -1,12 +1,8 @@
 import { Request, Response } from "express";
-
-import { CreateAutomataService } from "../services/CreateAutomataService";
-import { GetAutomataByIdService } from "../services/GetAutomataByIdService";
 import { GetAutomatasService } from "../services/GetAutomatasService";
-import { PaginatedRequest } from "../middleware/paginate";
 
 class GetAutomatasController {
-  async handle(request: PaginatedRequest, response: Response) {
+  async handle(request: Request, response: Response) {
     const { pageSize, offset } = request;
 
     try {

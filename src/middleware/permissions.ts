@@ -33,11 +33,12 @@ export function is(roles: string[]) {
 
     if (!user) return response.status(400).json("User does not exists");
 
-    const userHasRoles = user.roles
-      .map((role) => role.name)
-      .some((role) => roles.includes(role));
+    const userRoles = user.roles.map((role) => role.name);
+    const userHasRoles = userRoles.some((role) => roles.includes(role));
 
     if (!userHasRoles) return response.status(401).end();
+
+    request.isAdmin = roles.includes("admin");
 
     return next();
   };

@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+} from "typeorm";
 import { User } from "./User";
 import { BaseEntity } from "./BaseEntity";
 
@@ -18,6 +24,9 @@ class Automata extends BaseEntity {
     name: "author_id",
   })
   author: User;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }
 
 export { Automata };
