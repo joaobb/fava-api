@@ -7,14 +7,12 @@ export class CreateUserController {
 
     try {
       const createUserService = new CreateUserService();
-      const result = await createUserService.execute({
+      await createUserService.execute({
         name,
         email,
         password,
         role,
       });
-
-      console.log(result);
 
       return response.status(201).send();
     } catch (error: any) {

@@ -1,6 +1,7 @@
 import { automataRepository } from "../repositories/automataRepository";
 import { Automata } from "../entities/Automata";
 import { userRepository } from "../repositories/userRepository";
+import { UploadJsonService } from "./UploadJsonService";
 
 interface AutomataRequest {
   name: string;
@@ -25,12 +26,15 @@ class CreateAutomataService {
     if (!author) throw new Error("Author not found");
 
     // TODO: Upload automata to storage
-    const source = "https://api.npoint.io/86994ad0b1e6757e0e90";
+    const uploadJsonService = new UploadJsonService();
+    const automataSource = await uploadJsonService.execute({
+      payload: automata,
+    });
 
     const newAutomata = await automataRepository.create({
       name,
       description,
-      source,
+      source: automataSource,
       author,
     });
 
