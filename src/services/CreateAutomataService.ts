@@ -2,12 +2,14 @@ import { automataRepository } from "../repositories/automataRepository";
 import { Automata } from "../entities/Automata";
 import { userRepository } from "../repositories/userRepository";
 import { UploadJsonService } from "./UploadJsonService";
+import { Privacy } from "../enums/Privacy";
 
 interface AutomataRequest {
   name: string;
   description: string;
   automata: Object;
   authorId: number;
+  privacy: string;
 }
 
 class CreateAutomataService {
@@ -16,7 +18,10 @@ class CreateAutomataService {
     description,
     automata,
     authorId,
+    privacy,
   }: AutomataRequest): Promise<Automata> {
+    if (!Object.values(Privacy).includes(privacy))
+      throw new Error("Selected privacy is invalid");
     const author = await userRepository.findOne({
       where: {
         id: authorId,
@@ -25,7 +30,6 @@ class CreateAutomataService {
 
     if (!author) throw new Error("Author not found");
 
-    // TODO: Upload automata to storage
     const uploadJsonService = new UploadJsonService();
     const automataSource = await uploadJsonService.execute({
       payload: automata,
@@ -36,6 +40,7 @@ class CreateAutomataService {
       description,
       source: automataSource,
       author,
+      privacy,
     });
 
     return await automataRepository.save(newAutomata);

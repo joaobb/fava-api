@@ -4,7 +4,7 @@ import { CreateAutomataService } from "../services/CreateAutomataService";
 
 class CreateAutomataController {
   async handle(request: Request, response: Response) {
-    const { name, description, automata } = request.body;
+    const { name, description, automata, privacy } = request.body;
     const authorId = request.userId;
 
     try {
@@ -14,6 +14,7 @@ class CreateAutomataController {
         description,
         automata,
         authorId,
+        privacy,
       });
 
       return response.status(201).json({ id: result.id });

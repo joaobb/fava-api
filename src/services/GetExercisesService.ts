@@ -1,31 +1,31 @@
-import { automataRepository } from "../repositories/automataRepository";
-import { Automata } from "../entities/Automata";
+import { exerciseRepository } from "../repositories/exerciseRepository";
+import { Exercise } from "../entities/Exercise";
 import { Privacy } from "../enums/Privacy";
 
-interface AutomataRequest {
+interface ExerciseRequest {
   isAdmin: boolean;
   userId: number;
   pageSize?: number;
   offset?: number;
 }
 
-interface AutomataResponse {
-  automatas: Automata[];
+interface ExerciseResponse {
+  exercises: Exercise[];
   count: number;
 }
 
-class GetAutomatasService {
+class GetExercisesService {
   async execute({
     isAdmin,
     userId,
     pageSize,
     offset,
-  }: AutomataRequest): Promise<AutomataResponse> {
+  }: ExerciseRequest): Promise<ExerciseResponse> {
     const whereClause = !isAdmin
       ? [{ privacy: Privacy.public }, { author: { id: userId } }]
       : undefined;
 
-    const [automatas, count] = await automataRepository.findAndCount({
+    const [exercises, count] = await exerciseRepository.findAndCount({
       select: {
         id: true,
         createdAt: true,
@@ -39,8 +39,8 @@ class GetAutomatasService {
       skip: offset,
     });
 
-    return { automatas, count };
+    return { exercises, count };
   }
 }
 
-export { GetAutomatasService };
+export { GetExercisesService };

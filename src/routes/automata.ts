@@ -4,28 +4,46 @@ import { CreateAutomataController } from "../controllers/CreateAutomataControlle
 import { GetAutomataByIdController } from "../controllers/GetAutomataByIdController";
 import { GetAutomatasController } from "../controllers/GetAutomatasController";
 import { paginate } from "../middleware/paginate";
-import { can, is } from "../middleware/permissions";
+import { authorOrAdminOnly, is } from "../middleware/permissions";
 import { DeleteAutomataController } from "../controllers/DeleteAutomataController";
+import { Automata } from "../entities/Automata";
+import { Roles } from "../enums/Roles";
+import { identifyUser } from "../middleware/identifyUser";
 
 const automatasRouter = Router();
 
 automatasRouter.post(
   "/",
   ensuredAuthenticated(),
-  can(["create_automata"]),
+  is([Roles.admin, Roles.teacher]),
   new CreateAutomataController().handle
 );
 
-automatasRouter.get("/", paginate(), new GetAutomatasController().handle);
+automatasRouter.get(
+  "/",
+  identifyUser(),
+  paginate(),
+  new GetAutomatasController().handle
+);
 
-automatasRouter.get("/:automataId", new GetAutomataByIdController().handle);
+automatasRouter.get(
+  "/:automataId",
+  identifyUser(),
+  new GetAutomataByIdController().handle
+);
 
-automatasRouter.put("/:automataId");
+automatasRouter.put(
+  "/:automataId",
+  ensuredAuthenticated(),
+  is([Roles.admin, Roles.teacher]),
+  authorOrAdminOnly("automataId", Automata)
+);
 
 automatasRouter.delete(
   "/:automataId",
   ensuredAuthenticated(),
-  is(["admin", "teacher"]),
+  is([Roles.admin, Roles.teacher]),
+  authorOrAdminOnly("automataId", Automata),
   new DeleteAutomataController().handle
 );
 

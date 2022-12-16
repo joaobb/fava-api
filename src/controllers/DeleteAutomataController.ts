@@ -5,15 +5,12 @@ import { DeleteAutomataService } from "../services/DeleteAutomataService";
 class DeleteAutomataController {
   async handle(request: Request, response: Response) {
     const { automataId } = request.params;
-    const { userId, isAdmin } = request;
 
     if (!automataId) throw new Error("Automata not found");
 
     try {
       const deleteAutomataService = new DeleteAutomataService();
       const result = await deleteAutomataService.execute({
-        isAdmin,
-        userId,
         automataId: Number(automataId),
       });
 

@@ -3,15 +3,16 @@ import { CreateUserService } from "../services/CreateUserService";
 
 export class CreateUserController {
   async handle(request: Request, response: Response) {
-    const { name, email, password, role } = request.body;
+    const { name, email, password, role, roles = [] } = request.body;
 
     try {
       const createUserService = new CreateUserService();
+
       await createUserService.execute({
         name,
         email,
         password,
-        role,
+        roles: [role, ...roles].filter(Boolean),
       });
 
       return response.status(201).send();

@@ -5,8 +5,8 @@ interface JsonRequest {
 }
 
 export class UploadJsonService {
-  async execute({ payload }: JsonRequest) {
+  execute({ payload }: JsonRequest) {
     if (!payload) return;
-    return await ExtendsClass.uploadJson(payload);
+    return ExtendsClass.uploadJson(payload);
   }
 }

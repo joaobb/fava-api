@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
-import { GetAutomatasService } from "../services/GetAutomatasService";
+import { GetExercisesService } from "../services/GetExercisesService";
 
-class GetAutomatasController {
+class GetExercisesController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset } = request;
     try {
-      console.log({isAdmin});
-      const getAutomatasService = new GetAutomatasService();
-      const result = await getAutomatasService.execute({
+      const getExercisesService = new GetExercisesService();
+      const result = await getExercisesService.execute({
         isAdmin,
         userId,
         pageSize,
@@ -21,4 +20,4 @@ class GetAutomatasController {
   }
 }
 
-export { GetAutomatasController };
+export { GetExercisesController };

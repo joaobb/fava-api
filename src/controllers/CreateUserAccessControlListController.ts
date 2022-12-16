@@ -3,7 +3,7 @@ import { CreateUserAccessControlListService } from "../services/CreateUserAccess
 
 export class CreateUserAccessControlListController {
   async handle(request: Request, response: Response) {
-    const { permissions = [], roles = [] } = request.body;
+    const { targetEmail, permissions = [], roles = [] } = request.body;
     const { userId } = request;
 
     try {
@@ -11,6 +11,7 @@ export class CreateUserAccessControlListController {
         new CreateUserAccessControlListService();
 
       const result = await createUserAccessControlListService.execute({
+        targetEmail,
         userId,
         permissions,
         roles,
