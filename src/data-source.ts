@@ -1,8 +1,10 @@
 import "dotenv/config";
 import "reflect-metadata";
-import { DataSource } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
+import { SeederOptions } from "typeorm-extension";
+import { MainSeeder } from "./database/seeds/MainSeeder";
 
-const AppDataSource = new DataSource({
+const options: DataSourceOptions & SeederOptions = {
   type: "postgres",
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -11,6 +13,10 @@ const AppDataSource = new DataSource({
   database: process.env.DB_DATABASE,
   entities: [`${__dirname}/**/entities/*.{ts,js}`],
   migrations: [`${__dirname}/**/migrations/*.{ts,js}`],
-});
+
+  seeds: [MainSeeder],
+};
+
+const AppDataSource = new DataSource(options);
 
 export { AppDataSource };

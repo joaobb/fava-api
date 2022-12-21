@@ -4,7 +4,7 @@ import { permissionRouter } from "./permission";
 import { authRouter } from "./auth";
 import { automatasRouter } from "./automata";
 import { identifyUser } from "../middleware/identifyUser";
-import { exercisesRouter } from "./exercise";
+import { testsRouter } from "./test";
 
 const routes = Router();
 
@@ -14,6 +14,6 @@ routes.use("/", authRouter);
 routes.use("/roles", rolesRouter);
 routes.use("/permissions", permissionRouter);
 routes.use("/automatas", automatasRouter);
-routes.use("/exercises", exercisesRouter);
+routes.use("/tests", testsRouter);
 
 export { routes };

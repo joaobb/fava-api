@@ -1,10 +1,23 @@
-import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { Permission } from "./Permission";
-import { BaseEntity } from "./BaseEntity";
 
 @Entity("roles")
-class Role extends BaseEntity {
-  @Column({ type: "text" })
+class Role {
+  @PrimaryColumn({
+    type: "numeric",
+    default: 1,
+  })
+  id!: number;
+
+  @Column({ type: "text", unique: true })
   name: string;
 
   @ManyToMany(() => Permission)
@@ -14,6 +27,12 @@ class Role extends BaseEntity {
     inverseJoinColumns: [{ name: "permission_id" }],
   })
   permissions: Permission[];
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }
 
 export { Role };

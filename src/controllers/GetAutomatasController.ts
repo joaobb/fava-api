@@ -5,7 +5,6 @@ class GetAutomatasController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset } = request;
     try {
-      console.log({isAdmin});
       const getAutomatasService = new GetAutomatasService();
       const result = await getAutomatasService.execute({
         isAdmin,

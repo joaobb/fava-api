@@ -1,29 +1,29 @@
 import { automataRepository } from "../repositories/automataRepository";
-import { Exercise } from "../entities/Exercise";
+import { Test } from "../entities/Test";
 import { userRepository } from "../repositories/userRepository";
 import { Privacy } from "../enums/Privacy";
 import { In } from "typeorm";
-import { exerciseRepository } from "../repositories/exerciseRepository";
+import { testRepository } from "../repositories/testRepository";
 
-interface ExerciseRequest {
+interface TestRequest {
   name: string;
   description: string;
-  automatas: number[];
+  automatasIds: number[];
   authorId: number;
   privacy: string;
 }
 
-class CreateExerciseService {
+class CreateTestService {
   async execute({
     name,
     description,
-    automatas,
+    automatasIds,
     authorId,
     privacy,
-  }: ExerciseRequest): Promise<Exercise> {
+  }: TestRequest): Promise<Test> {
     if (!Object.values(Privacy).includes(privacy))
       throw new Error("Selected privacy is invalid");
-    if (!automatas?.length) throw new Error("Invalid automatas selection");
+    if (!automatasIds?.length) throw new Error("Invalid automata selection");
 
     const author = await userRepository.findOne({
       where: {
@@ -33,30 +33,30 @@ class CreateExerciseService {
 
     if (!author) throw new Error("Author not found");
 
-    const selectedAutomatas = await automataRepository.find({
+    const automatas = await automataRepository.find({
       where: [
         {
-          id: In(automatas),
+          id: In(automatasIds),
           privacy: Privacy.public,
         },
         {
-          id: In(automatas),
+          id: In(automatasIds),
           privacy: Privacy.private,
           author: { id: authorId },
         },
       ],
     });
 
-    const newExercise = await exerciseRepository.create({
+    const newTest = await testRepository.create({
       name,
       description,
-      automatas: selectedAutomatas,
+      automatas: automatas,
       author,
       privacy,
     });
 
-    return await exerciseRepository.save(newExercise);
+    return await testRepository.save(newTest);
   }
 }
 
-export { CreateExerciseService };
+export { CreateTestService };

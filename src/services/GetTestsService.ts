@@ -1,31 +1,31 @@
-import { exerciseRepository } from "../repositories/exerciseRepository";
-import { Exercise } from "../entities/Exercise";
+import { testRepository } from "../repositories/testRepository";
+import { Test } from "../entities/Test";
 import { Privacy } from "../enums/Privacy";
 
-interface ExerciseRequest {
+interface TestRequest {
   isAdmin: boolean;
   userId: number;
   pageSize?: number;
   offset?: number;
 }
 
-interface ExerciseResponse {
-  exercises: Exercise[];
+interface TestResponse {
+  tests: Test[];
   count: number;
 }
 
-class GetExercisesService {
+class GetTestsService {
   async execute({
     isAdmin,
     userId,
     pageSize,
     offset,
-  }: ExerciseRequest): Promise<ExerciseResponse> {
+  }: TestRequest): Promise<TestResponse> {
     const whereClause = !isAdmin
       ? [{ privacy: Privacy.public }, { author: { id: userId } }]
       : undefined;
 
-    const [exercises, count] = await exerciseRepository.findAndCount({
+    const [tests, count] = await testRepository.findAndCount({
       select: {
         id: true,
         createdAt: true,
@@ -39,8 +39,8 @@ class GetExercisesService {
       skip: offset,
     });
 
-    return { exercises, count };
+    return { tests, count };
   }
 }
 
-export { GetExercisesService };
+export { GetTestsService };

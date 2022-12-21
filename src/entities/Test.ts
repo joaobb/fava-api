@@ -11,15 +11,15 @@ import { User } from "./User";
 import { BaseEntity } from "./BaseEntity";
 import { Automata } from "./Automata";
 
-@Entity("exercises")
-class Exercise extends BaseEntity {
+@Entity("tests")
+class Test extends BaseEntity {
   @Column({ type: "text" })
   name: string;
 
   @Column({ type: "text" })
   description: string;
 
-  @ManyToOne(() => User, (author) => author.id)
+  @ManyToOne(() => User)
   @JoinColumn({
     name: "author_id",
   })
@@ -27,8 +27,8 @@ class Exercise extends BaseEntity {
 
   @ManyToMany(() => Automata)
   @JoinTable({
-    name: "exercise_automatas",
-    joinColumns: [{ name: "exercise_id" }],
+    name: "test_automatas",
+    joinColumns: [{ name: "test_id" }],
     inverseJoinColumns: [{ name: "automata_id" }],
   })
   automatas: Automata[];
@@ -39,4 +39,4 @@ class Exercise extends BaseEntity {
   @DeleteDateColumn()
   deletedAt?: Date;
 }
-export { Exercise };
+export { Test };

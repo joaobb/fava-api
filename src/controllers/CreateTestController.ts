@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
-import { CreateExerciseService } from "../services/CreateExerciseService";
+import { CreateTestService } from "../services/CreateTestService";
 
-class CreateExerciseController {
+class CreateTestController {
   async handle(request: Request, response: Response) {
     const { name, description, automatas, privacy } = request.body;
     const { userId: authorId } = request;
 
     try {
-      const createExerciseService = new CreateExerciseService();
-      const result = await createExerciseService.execute({
+      const createTestService = new CreateTestService();
+      const result = await createTestService.execute({
         name,
         description,
-        automatas,
+        automatasIds: automatas,
         authorId,
         privacy,
       });
@@ -23,4 +23,4 @@ class CreateExerciseController {
   }
 }
 
-export { CreateExerciseController };
+export { CreateTestController };

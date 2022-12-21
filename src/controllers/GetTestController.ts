@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import { GetExercisesService } from "../services/GetExercisesService";
+import { GetTestsService } from "../services/GetTestsService";
 
-class GetExercisesController {
+class GetTestsController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset } = request;
     try {
-      const getExercisesService = new GetExercisesService();
-      const result = await getExercisesService.execute({
+      const getTestsService = new GetTestsService();
+      const result = await getTestsService.execute({
         isAdmin,
         userId,
         pageSize,
@@ -20,4 +20,4 @@ class GetExercisesController {
   }
 }
 
-export { GetExercisesController };
+export { GetTestsController };

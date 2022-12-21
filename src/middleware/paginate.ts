@@ -5,7 +5,6 @@ function paginate() {
     const { "content-range": contentRange } = request.headers;
 
     const match = contentRange?.match(/(\d+)-(\d+)/);
-
     if (match) {
       request.offset = Number(match[1] ?? -1);
       request.pageSize = Number(match[2] ?? -1);
