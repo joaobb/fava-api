@@ -1,5 +1,6 @@
 import { permissionRepository } from "../repositories/permissionRepository";
 import { Permission } from "../entities/Permission";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface PermissionRequest {
   name: string;
@@ -14,7 +15,7 @@ export class CreatePermissionService {
       },
     });
 
-    if (alreadyExists) throw new Error("Permission already exists");
+    if (alreadyExists) throw new BadRequestError("Permission already exists");
 
     const permission = permissionRepository.create({ name, description });
     await permissionRepository.save(permission);

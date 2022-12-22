@@ -3,6 +3,7 @@ import { testSubmissionRepository } from "../repositories/testSubmissionReposito
 import { TestSubmission } from "../entities/TestSubmission";
 import { testRepository } from "../repositories/testRepository";
 import { GradeTestService } from "./GradeAutomatasService";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface TestRequest {
   testId: number;
@@ -24,7 +25,7 @@ class SubmitTestAnswerService {
       },
     });
 
-    if (!taker) throw new Error("Test taker not found");
+    if (!taker) throw new BadRequestError("Test taker not found");
 
     const test = await testRepository.findOne({
       where: {
@@ -33,7 +34,7 @@ class SubmitTestAnswerService {
       relations: ["automatas"],
     });
 
-    if (!test) throw new Error("Test not found");
+    if (!test) throw new BadRequestError("Test not found");
 
     const gradeTestService = new GradeTestService();
     const { gradedAnswers, grade } = await gradeTestService.execute({

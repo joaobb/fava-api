@@ -1,6 +1,7 @@
 import { testRepository } from "../repositories/testRepository";
 import { Test } from "../entities/Test";
 import { Privacy } from "../enums/Privacy";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface TestRequest {
   isAdmin: boolean;
@@ -34,7 +35,7 @@ class GetTestByIdService {
       relations: ["automatas"],
     });
 
-    if (!assigment) throw new Error("Test not found");
+    if (!assigment) throw new BadRequestError("Test not found");
 
     return assigment;
   }

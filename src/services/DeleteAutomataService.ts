@@ -1,4 +1,5 @@
 import { automataRepository } from "../repositories/automataRepository";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface AutomataRequest {
   automataId: number;
@@ -11,7 +12,7 @@ class DeleteAutomataService {
       relations: ["author"],
     });
 
-    if (!automata) throw new Error("Automata does not exist");
+    if (!automata) throw new BadRequestError("Automata does not exist");
 
     const result = await automataRepository.softDelete({
       id: automataId,

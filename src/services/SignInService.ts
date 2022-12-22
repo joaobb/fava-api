@@ -1,5 +1,6 @@
 import { userRepository } from "../repositories/userRepository";
 import { hash } from "bcryptjs";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface UserRequest {
   email: string;
@@ -12,7 +13,7 @@ export class SignInService {
       email,
     });
 
-    if (!userExists) throw new Error("Email/password is incorrect");
+    if (!userExists) throw new BadRequestError("Email/password is incorrect");
 
     const passwordHash = await hash(password, 8);
     const user = userRepository.create({

@@ -1,6 +1,8 @@
+import "express-async-errors";
 import express from "express";
 import { routes } from "./routes";
 import { AppDataSource } from "./data-source";
+import { errorMiddleware } from "./middleware/error";
 
 AppDataSource.initialize().then(() => {
   const PORT = process.env.APP_PORT;
@@ -10,6 +12,8 @@ AppDataSource.initialize().then(() => {
   app.use(routes);
 
   app.get("/ping", (req, res) => res.send("pong"));
+
+  app.use(errorMiddleware());
 
   app.listen(PORT, () => console.log("Listening at port: " + PORT));
 });

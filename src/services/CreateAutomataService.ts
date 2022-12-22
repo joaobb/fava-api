@@ -3,6 +3,7 @@ import { Automata } from "../entities/Automata";
 import { userRepository } from "../repositories/userRepository";
 import { UploadJsonService } from "./UploadJsonService";
 import { Privacy } from "../enums/Privacy";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface AutomataRequest {
   name: string;
@@ -21,14 +22,14 @@ class CreateAutomataService {
     privacy,
   }: AutomataRequest): Promise<Automata> {
     if (!Object.values(Privacy).includes(privacy))
-      throw new Error("Selected privacy is invalid");
+      throw new BadRequestError("Selected privacy is invalid");
     const author = await userRepository.findOne({
       where: {
         id: authorId,
       },
     });
 
-    if (!author) throw new Error("Author not found");
+    if (!author) throw new BadRequestError("Author not found");
 
     const uploadJsonService = new UploadJsonService();
     const automataSource = await uploadJsonService.execute({

@@ -4,19 +4,15 @@ import { GetTestsService } from "../services/GetTestsService";
 class GetTestsController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset } = request;
-    try {
-      const getTestsService = new GetTestsService();
-      const result = await getTestsService.execute({
-        isAdmin,
-        userId,
-        pageSize,
-        offset,
-      });
+    const getTestsService = new GetTestsService();
+    const result = await getTestsService.execute({
+      isAdmin,
+      userId,
+      pageSize,
+      offset,
+    });
 
-      return response.status(200).json(result);
-    } catch (error: any) {
-      return response.status(400).json(error.message);
-    }
+    return response.status(200).json(result);
   }
 }
 

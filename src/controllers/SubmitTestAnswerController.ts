@@ -7,18 +7,14 @@ class SubmitTestAnswerController {
     const { answer } = request.body;
     const { userId } = request;
 
-    try {
-      const createTestService = new SubmitTestAnswerService();
-      const result = await createTestService.execute({
-        userId,
-        testId: Number(testId),
-        answer,
-      });
+    const createTestService = new SubmitTestAnswerService();
+    const result = await createTestService.execute({
+      userId,
+      testId: Number(testId),
+      answer,
+    });
 
-      return response.status(201).json({ id: result.id });
-    } catch (error: any) {
-      return response.status(400).json(error.message);
-    }
+    return response.status(201).json({ id: result.id });
   }
 }
 

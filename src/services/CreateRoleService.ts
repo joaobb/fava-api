@@ -1,5 +1,6 @@
 import { roleRepository } from "../repositories/roleRepository";
 import { Role } from "../entities/Role";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface RoleRequest {
   name: string;
@@ -13,7 +14,7 @@ export class CreateRoleService {
       },
     });
 
-    if (alreadyExists) throw new Error("Role already exists");
+    if (alreadyExists) throw new BadRequestError("Role already exists");
 
     const role = roleRepository.create({ name });
     await roleRepository.save(role);

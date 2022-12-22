@@ -1,6 +1,7 @@
 import { automataRepository } from "../repositories/automataRepository";
 import { Automata } from "../entities/Automata";
 import { Privacy } from "../enums/Privacy";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface AutomataRequest {
   isAdmin: boolean;
@@ -25,7 +26,7 @@ class GetAutomataByIdService {
       where: whereClause,
     });
 
-    if (!automata) throw new Error("Automata not found");
+    if (!automata) throw new BadRequestError("Automata not found");
 
     return automata;
   }

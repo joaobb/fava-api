@@ -1,5 +1,6 @@
 import { testSubmissionRepository } from "../repositories/testSubmissionRepository";
 import { TestSubmission } from "../entities/TestSubmission";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface TestAnswerRequest {
   userId: number;
@@ -28,7 +29,7 @@ class GetTestSubmissionByIdService {
       order: { id: "DESC" },
     });
 
-    if (!testAnswer) throw new Error("Answer not found");
+    if (!testAnswer) throw new BadRequestError("Answer not found");
 
     return { answer: testAnswer };
   }

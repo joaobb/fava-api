@@ -6,20 +6,16 @@ export class CreateUserAccessControlListController {
     const { targetEmail, permissions = [], roles = [] } = request.body;
     const { userId } = request;
 
-    try {
-      const createUserAccessControlListService =
-        new CreateUserAccessControlListService();
+    const createUserAccessControlListService =
+      new CreateUserAccessControlListService();
 
-      const result = await createUserAccessControlListService.execute({
-        targetEmail,
-        userId,
-        permissions,
-        roles,
-      });
+    const result = await createUserAccessControlListService.execute({
+      targetEmail,
+      userId,
+      permissions,
+      roles,
+    });
 
-      return response.status(201).json({ id: result.id });
-    } catch (error: any) {
-      return response.status(400).json(error.message);
-    }
+    return response.status(201).json({ id: result.id });
   }
 }

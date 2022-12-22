@@ -1,4 +1,5 @@
 import axios from "axios";
+import { InternalServerError } from "../helpers/http-errors";
 
 export class ExtendsClass {
   static async uploadJson(payload: Object) {
@@ -16,7 +17,9 @@ export class ExtendsClass {
 
       return response.data?.uri;
     } catch (error: any) {
-      throw new Error("Error at uploading element: " + error.message);
+      throw new InternalServerError(
+        "Error at uploading element: " + error.message
+      );
     }
   }
   static async fetchJson(objectId: string) {
@@ -32,7 +35,9 @@ export class ExtendsClass {
 
       return response.data;
     } catch (error: any) {
-      throw new Error("Error at fetching element: " + error.message);
+      throw new InternalServerError(
+        "Error at fetching element: " + error.message
+      );
     }
   }
   static async fetchJsonByUrl(sourceUrl: string) {
@@ -45,7 +50,9 @@ export class ExtendsClass {
 
       return response.data;
     } catch (error: any) {
-      throw new Error("Error at fetching element: " + error.message);
+      throw new InternalServerError(
+        "Error at fetching element: " + error.message
+      );
     }
   }
 }

@@ -4,6 +4,7 @@ import { userRepository } from "../repositories/userRepository";
 import { Privacy } from "../enums/Privacy";
 import { In } from "typeorm";
 import { testRepository } from "../repositories/testRepository";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface TestRequest {
   name: string;
@@ -22,8 +23,9 @@ class CreateTestService {
     privacy,
   }: TestRequest): Promise<Test> {
     if (!Object.values(Privacy).includes(privacy))
-      throw new Error("Selected privacy is invalid");
-    if (!automatasIds?.length) throw new Error("Invalid automata selection");
+      throw new BadRequestError("Selected privacy is invalid");
+    if (!automatasIds?.length)
+      throw new BadRequestError("Invalid automata selection");
 
     const author = await userRepository.findOne({
       where: {
@@ -31,7 +33,7 @@ class CreateTestService {
       },
     });
 
-    if (!author) throw new Error("Author not found");
+    if (!author) throw new BadRequestError("Author not found");
 
     const automatas = await automataRepository.find({
       where: [

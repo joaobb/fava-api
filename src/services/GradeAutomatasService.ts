@@ -3,6 +3,7 @@ import { testQuestionAnswerRepository } from "../repositories/testQuestionAnswer
 import { Test } from "../entities/Test";
 import { automataRepository } from "../repositories/automataRepository";
 import { ExtendsClass } from "../libs/ExtendsClass";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface GradeTestRequest {
   test: Test;
@@ -25,7 +26,7 @@ class GradeTestService {
         id: questionAutomataId,
       });
 
-      if (!questionAutomata) throw new Error("Automata not found");
+      if (!questionAutomata) throw new BadRequestError("Automata not found");
       const questionAutomataDefinition = await ExtendsClass.fetchJsonByUrl(
         questionAutomata.source
       );

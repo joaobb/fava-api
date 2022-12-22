@@ -3,6 +3,7 @@ import { hash } from "bcryptjs";
 import { Roles } from "../enums/Roles";
 import { roleRepository } from "../repositories/roleRepository";
 import { In } from "typeorm";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface UserRequest {
   email: string;
@@ -19,7 +20,7 @@ export class CreateUserService {
       email,
     });
 
-    if (userExists) throw new Error("User already exists");
+    if (userExists) throw new BadRequestError("User already exists");
 
     const filteredRoles = roles.filter((role) =>
       userRegisterableRoles.includes(role)
@@ -29,7 +30,7 @@ export class CreateUserService {
       where: { name: In(filteredRoles) },
     });
 
-    if (!userRoles?.length) throw new Error("Invalid role");
+    if (!userRoles?.length) throw new BadRequestError("Invalid role");
 
     const passwordHash = await hash(password, 8);
     const user = userRepository.create({

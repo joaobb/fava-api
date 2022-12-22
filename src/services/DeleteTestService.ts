@@ -1,4 +1,5 @@
 import { testRepository } from "../repositories/testRepository";
+import { BadRequestError } from "../helpers/http-errors";
 
 interface TestRequest {
   testId: number;
@@ -11,7 +12,7 @@ class DeleteTestService {
       relations: ["author"],
     });
 
-    if (!automata) throw new Error("Test does not exist");
+    if (!automata) throw new BadRequestError("Test does not exist");
 
     const result = await testRepository.softDelete({
       id: testId,
