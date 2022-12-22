@@ -2,14 +2,15 @@ import { BaseEntity } from "./BaseEntity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Test } from "./Test";
 import { Automata } from "./Automata";
+import { TestSubmission } from "./TestSubmission";
 
 @Entity("tests_questions_answers")
 class TestQuestionAnswer extends BaseEntity {
-  @ManyToOne(() => Test, (test) => test.id)
+  @ManyToOne(() => TestSubmission, (submission) => submission.id)
   @JoinColumn({
-    name: "test_id",
+    name: "test_submission_id",
   })
-  test: Test;
+  testSubmission: TestSubmission;
 
   @ManyToOne(() => Automata, (automata) => automata.id)
   @JoinColumn({

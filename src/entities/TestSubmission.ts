@@ -24,7 +24,7 @@ class TestSubmission extends BaseEntity {
   @Column({ type: "boolean" })
   authorReviewed: boolean;
 
-  @OneToMany(() => TestQuestionAnswer, (answer) => answer.test)
+  @OneToMany(() => TestQuestionAnswer, (answer) => answer.testSubmission)
   answers: TestQuestionAnswer[];
 }
 
