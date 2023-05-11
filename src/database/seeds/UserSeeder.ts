@@ -2,6 +2,8 @@ import { Seeder, SeederFactoryManager } from "typeorm-extension";
 import { DataSource } from "typeorm";
 import { User } from "../../entities/User";
 import { hash } from "bcryptjs";
+import { Role } from "../../entities/Role";
+import { Roles, RolesId } from "../../enums/Roles";
 
 export class UserSeeder implements Seeder {
   async run(
@@ -13,10 +15,16 @@ export class UserSeeder implements Seeder {
     const userRepository = dataSource.getRepository(User);
     const passwordHash = await hash(process.env.ADMIN_PASSWORD, 8);
 
+    const rolesRepository = dataSource.getRepository(Role);
+    const adminRole = (await rolesRepository.findOneBy({
+      id: RolesId[Roles.admin],
+    }))!;
+
     const userData = {
       name: "admin",
       email: process.env.ADMIN_EMAIL,
       password: passwordHash,
+      roles: [adminRole],
     };
 
     const newUser = await userRepository.create(userData);

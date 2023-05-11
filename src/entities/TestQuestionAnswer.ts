@@ -18,7 +18,7 @@ class TestQuestionAnswer extends BaseEntity {
   })
   questionAutomata: Automata;
 
-  @Column({ type: "text" })
+  @Column({ type: "text", nullable: true })
   answerSource: string;
 
   @Column({ type: "boolean" })

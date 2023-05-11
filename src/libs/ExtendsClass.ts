@@ -2,7 +2,7 @@ import axios from "axios";
 import { InternalServerError } from "../helpers/http-errors";
 
 export class ExtendsClass {
-  static async uploadJson(payload: Object) {
+  static async uploadJson(payload: Object): Promise<string> {
     try {
       const response = await axios.post(
         "https://json.extendsclass.com/bin",

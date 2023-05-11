@@ -4,6 +4,7 @@ import { Test } from "../entities/Test";
 import { automataRepository } from "../repositories/automataRepository";
 import { ExtendsClass } from "../libs/ExtendsClass";
 import { BadRequestError } from "../helpers/http-errors";
+import { TestQuestionAnswer } from "../entities/TestQuestionAnswer";
 
 interface GradeTestRequest {
   test: Test;
@@ -18,41 +19,53 @@ class GradeTestService {
     const gradedAnswers = [];
 
     for (const { id: questionAutomataId } of test.automatas) {
-      const answerAutomataDefinition = answers[questionAutomataId];
-
-      if (!answerAutomataDefinition) continue;
+      const submittedAutomata = answers[questionAutomataId];
 
       const questionAutomata = await automataRepository.findOneBy({
         id: questionAutomataId,
       });
 
       if (!questionAutomata) throw new BadRequestError("Automata not found");
-      const questionAutomataDefinition = await ExtendsClass.fetchJsonByUrl(
-        questionAutomata.source
-      );
 
-      const areEquivalent = Automator.testEquivalence(
-        questionAutomataDefinition,
-        answerAutomataDefinition
-      );
+      let testQuestionAnswer: TestQuestionAnswer;
 
-      const answerAutomataSource = await ExtendsClass.uploadJson(
-        answerAutomataDefinition
-      );
+      if (submittedAutomata) {
+        const questionAutomataDefinition = await ExtendsClass.fetchJsonByUrl(
+          questionAutomata.source
+        );
 
-      const testQuestionAnswer = testQuestionAnswerRepository.create({
-        test,
-        questionAutomata,
-        answerSource: answerAutomataSource,
-        correct: areEquivalent.equivalent,
-      });
+        const areEquivalent =
+          { equivalent: true } ||
+          Automator.testEquivalence(
+            questionAutomataDefinition,
+            submittedAutomata
+          );
+
+        const answerAutomataSource = await ExtendsClass.uploadJson(
+          submittedAutomata
+        );
+        if (areEquivalent.equivalent) correctAnswersCounter++;
+
+        testQuestionAnswer = testQuestionAnswerRepository.create({
+          // testSubmission: test,
+          questionAutomata,
+          answerSource: answerAutomataSource,
+          correct: areEquivalent.equivalent,
+        });
+      } else {
+        // User did not submit the requested automata
+        testQuestionAnswer = testQuestionAnswerRepository.create({
+          questionAutomata,
+          correct: false,
+        });
+      }
 
       gradedAnswers.push(testQuestionAnswer);
 
       await testQuestionAnswerRepository.save(testQuestionAnswer);
-
-      if (areEquivalent.equivalent) correctAnswersCounter++;
     }
+
+    console.log({ correctAnswersCounter, total: test.automatas.length });
 
     const grade = (correctAnswersCounter * 10) / test.automatas.length;
 

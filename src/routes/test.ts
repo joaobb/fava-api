@@ -19,7 +19,7 @@ const testsRouter = Router();
 testsRouter.post(
   "/",
   ensuredAuthenticated(),
-  is([Roles.teacher]),
+  is([Roles.teacher, Roles.admin]),
   new CreateTestController().handle
 );
 
