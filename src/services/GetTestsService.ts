@@ -13,6 +13,7 @@ interface MaybeGradedTest {
   id: number;
   name: string;
   createdAt: Date;
+  privacy: keyof typeof Privacy;
   grade: number;
 }
 
@@ -36,12 +37,18 @@ class GetTestsService {
         "test.id = submission.test AND submission.taker_id = :userId",
         { userId }
       )
-      .select("test.id id, test.name name, test.createdAt createdAt")
+      .select(
+        "test.id id, test.name name, test.createdAt created_at,test.privacy privacy"
+      )
       .addSelect("MAX(submission.grade)::int", "grade")
-      .where(`test.privacy = :privacy OR test.author_id = :userId`, {
-        privacy: Privacy.public,
-        userId,
-      })
+      .where(
+        `:isAdmin OR test.privacy = :privacy OR test.author_id = :userId`,
+        {
+          isAdmin,
+          privacy: Privacy.public,
+          userId,
+        }
+      )
       .groupBy("test.id")
       .limit(pageSize)
       .offset(offset)
@@ -52,7 +59,8 @@ class GetTestsService {
         parsedTests.push({
           id: test.id,
           name: test.name,
-          createdAt: test.createdat,
+          createdAt: test.created_at,
+          privacy: test.privacy,
           grade: test.grade,
         });
 

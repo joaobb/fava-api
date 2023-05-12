@@ -35,7 +35,7 @@ class GradeTestService {
         );
 
         const areEquivalent =
-          { equivalent: true } ||
+          { equivalent: false } ||
           Automator.testEquivalence(
             questionAutomataDefinition,
             submittedAutomata
