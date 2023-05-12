@@ -5,6 +5,9 @@ import { TestSubmission } from "../entities/TestSubmission";
 interface TestRequest {
   isAdmin: boolean;
   userId: number;
+  filter: {
+    solved?: boolean;
+  };
   pageSize?: number;
   offset?: number;
 }
@@ -26,6 +29,7 @@ class GetTestsService {
   async execute({
     isAdmin,
     userId,
+    filter,
     pageSize,
     offset,
   }: TestRequest): Promise<TestResponse> {
@@ -42,11 +46,14 @@ class GetTestsService {
       )
       .addSelect("MAX(submission.grade)::int", "grade")
       .where(
-        `:isAdmin OR test.privacy = :privacy OR test.author_id = :userId`,
+        `(:isAdmin OR test.privacy = :privacy OR test.author_id = :userId) AND (:noFilter OR submission.id IS ${
+          filter.solved ? "NOT" : ""
+        } NULL)`,
         {
           isAdmin,
           privacy: Privacy.public,
           userId,
+          noFilter: filter.solved === undefined,
         }
       )
       .groupBy("test.id")
