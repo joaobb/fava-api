@@ -1,6 +1,6 @@
 import { testRepository } from "../repositories/testRepository";
-import { Test } from "../entities/Test";
 import { Privacy } from "../enums/Privacy";
+import { TestSubmission } from "../entities/TestSubmission";
 
 interface TestRequest {
   isAdmin: boolean;
@@ -9,8 +9,15 @@ interface TestRequest {
   offset?: number;
 }
 
+interface MaybeGradedTest {
+  id: number;
+  name: string;
+  createdAt: Date;
+  grade: number;
+}
+
 interface TestResponse {
-  tests: Test[];
+  tests: MaybeGradedTest[];
   count: number;
 }
 
@@ -21,25 +28,40 @@ class GetTestsService {
     pageSize,
     offset,
   }: TestRequest): Promise<TestResponse> {
-    const whereClause = !isAdmin
-      ? [{ privacy: Privacy.public }, { author: { id: userId } }]
-      : undefined;
+    const tests = await testRepository
+      .createQueryBuilder("test")
+      .leftJoin(
+        TestSubmission,
+        "submission",
+        "test.id = submission.test AND submission.taker_id = :userId",
+        { userId }
+      )
+      .select("test.id id, test.name name, test.createdAt createdAt")
+      .addSelect("MAX(submission.grade)::int", "grade")
+      .where(`test.privacy = :privacy OR test.author_id = :userId`, {
+        privacy: Privacy.public,
+        userId,
+      })
+      .groupBy("test.id")
+      .limit(pageSize)
+      .offset(offset)
+      .execute();
 
-    const [tests, count] = await testRepository.findAndCount({
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-        description: true,
-        privacy: true,
+    const parsedTests = tests.reduce(
+      (parsedTests: MaybeGradedTest[], test: any) => {
+        parsedTests.push({
+          id: test.id,
+          name: test.name,
+          createdAt: test.createdat,
+          grade: test.grade,
+        });
+
+        return parsedTests;
       },
-      where: whereClause,
-      take: pageSize,
-      skip: offset,
-    });
+      []
+    );
 
-    return { tests, count };
+    return { tests: parsedTests, count: tests.length };
   }
 }
 

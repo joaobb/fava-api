@@ -65,8 +65,6 @@ class GradeTestService {
       await testQuestionAnswerRepository.save(testQuestionAnswer);
     }
 
-    console.log({ correctAnswersCounter, total: test.automatas.length });
-
     const grade = (correctAnswersCounter * 10) / test.automatas.length;
 
     return { gradedAnswers, grade };
