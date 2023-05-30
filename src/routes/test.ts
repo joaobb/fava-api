@@ -23,7 +23,12 @@ testsRouter.post(
   new CreateTestController().handle
 );
 
-testsRouter.get("/", paginate(), new GetTestsController().handle);
+testsRouter.get(
+  "/",
+  ensuredAuthenticated(),
+  paginate(),
+  new GetTestsController().handle
+);
 
 testsRouter.get(
   "/answers",

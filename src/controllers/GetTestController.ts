@@ -5,6 +5,7 @@ class GetTestsController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset, query } = request;
     const solvedFilter = query.solved ? query.solved === "true" : undefined;
+    const authoredFilter = query.authored === "true";
 
     const getTestsService = new GetTestsService();
     const result = await getTestsService.execute({
@@ -12,6 +13,7 @@ class GetTestsController {
       userId,
       filter: {
         solved: solvedFilter,
+        authored: authoredFilter,
       },
       pageSize,
       offset,

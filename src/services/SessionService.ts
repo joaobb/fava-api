@@ -9,9 +9,17 @@ interface UserRequest {
   password: string;
 }
 
+interface UserResponse {
+  access_token: string;
+  role: number;
+}
+
 export class SessionService {
-  async execute({ email, password }: UserRequest) {
-    const user = await userRepository.findOne({ where: { email } });
+  async execute({ email, password }: UserRequest): Promise<UserResponse> {
+    const user = await userRepository.findOne({
+      where: { email },
+      relations: ["roles"],
+    });
 
     if (!user) throw new BadRequestError("Email or Password is incorrect");
 
@@ -22,6 +30,8 @@ export class SessionService {
 
     if (!process.env.JWT_SECRET)
       throw new BadRequestError("Email or Password is incorrect");
+
+    const userRole = Number(user.roles?.[0]?.id);
 
     const token = sign(
       {
@@ -34,6 +44,6 @@ export class SessionService {
       }
     );
 
-    return { access_token: token };
+    return { access_token: token, role: userRole };
   }
 }
