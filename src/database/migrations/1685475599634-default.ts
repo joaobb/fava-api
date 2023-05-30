@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class default1683767669811 implements MigrationInterface {
-    name = 'default1683767669811'
+export class default1685475599634 implements MigrationInterface {
+    name = 'default1685475599634'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "roles" ("id" numeric NOT NULL DEFAULT '1', "name" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_648e3f5447f725579d7d4ffdfb7" UNIQUE ("name"), CONSTRAINT "PK_c1433d71a4838793a49dcad46ab" PRIMARY KEY ("id"))`);
@@ -9,7 +9,7 @@ export class default1683767669811 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "users" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" text NOT NULL, "email" text NOT NULL, "password" text NOT NULL, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "tests" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" text NOT NULL, "description" text NOT NULL, "privacy" text NOT NULL DEFAULT 'public', "deletedAt" TIMESTAMP, "author_id" integer, CONSTRAINT "PK_4301ca51edf839623386860aed2" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "test_submissions" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "grade" numeric NOT NULL, "authorReviewed" boolean NOT NULL, "test_id" integer, "taker_id" integer, CONSTRAINT "PK_e05ffc282586eb005bdbe62084b" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "tests_questions_answers" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "answerSource" text NOT NULL, "correct" boolean NOT NULL, "test_submission_id" integer, "automata_id" integer, CONSTRAINT "PK_ae46b521f74bcdccc2f5a697638" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "tests_questions_answers" ("id" SERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "answerSource" text, "correct" boolean NOT NULL, "test_submission_id" integer, "automata_id" integer, CONSTRAINT "PK_ae46b521f74bcdccc2f5a697638" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "users_roles" ("user_id" integer NOT NULL, "role_id" numeric NOT NULL, CONSTRAINT "PK_c525e9373d63035b9919e578a9c" PRIMARY KEY ("user_id", "role_id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_e4435209df12bc1f001e536017" ON "users_roles" ("user_id") `);
         await queryRunner.query(`CREATE INDEX "IDX_1cf664021f00b9cc1ff95e17de" ON "users_roles" ("role_id") `);
