@@ -13,6 +13,7 @@ const options: DataSourceOptions & SeederOptions = {
   database: process.env.DB_DATABASE,
   entities: [`${__dirname}/**/entities/*.{ts,js}`],
   migrations: [`${__dirname}/**/migrations/*.{ts,js}`],
+  ssl: process.env.NODE_ENV === "production",
 
   seeds: [MainSeeder],
 };
