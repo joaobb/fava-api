@@ -4,6 +4,7 @@ import { GetTestsService } from "../services/GetTestsService";
 class GetTestsController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset, query } = request;
+    const nameFilter = query.name ? String(query.name).trim() : undefined;
     const solvedFilter = query.solved ? query.solved === "true" : undefined;
     const authoredFilter = query.authored === "true";
 
@@ -12,6 +13,7 @@ class GetTestsController {
       isAdmin,
       userId,
       filter: {
+        name: nameFilter,
         solved: solvedFilter,
         authored: authoredFilter,
       },

@@ -7,6 +7,7 @@ interface TestRequest {
   isAdmin: boolean;
   userId: number;
   filter: {
+    name?: string;
     solved?: boolean;
     authored?: boolean;
   };
@@ -40,27 +41,7 @@ class GetTestsService {
     pageSize,
     offset,
   }: TestRequest): Promise<TestResponse> {
-    const whereClauses: {
-      [filter: string]: WhereClause;
-    } = {
-      authored: { where: "test.author_id = :userId", parameters: { userId } },
-      solved: { where: "submission.id IS NOT NULL" },
-      unsolved: { where: "submission.id IS NULL" },
-      all: {
-        where:
-          ":isAdmin OR test.privacy = :privacy OR test.author_id = :userId",
-        parameters: { isAdmin, privacy: Privacy.public, userId },
-      },
-    };
-
-    let whereClause: WhereClause;
-
-    if (filter.authored) whereClause = whereClauses.authored;
-    else if (filter.solved) whereClause = whereClauses.solved;
-    else if (filter.solved === false) whereClause = whereClauses.unsolved;
-    else whereClause = whereClauses.all;
-
-    const tests = await testRepository
+    const query = testRepository
       .createQueryBuilder("test")
       .leftJoin(
         TestSubmission,
@@ -72,11 +53,29 @@ class GetTestsService {
         "test.id id, test.name name, test.createdAt created_at,test.privacy privacy"
       )
       .addSelect("MAX(submission.grade)::int", "grade")
-      .where(whereClause.where, whereClause.parameters)
+      .where(
+        "(:isAdmin OR test.privacy = :privacy OR test.author_id = :userId)",
+        {
+          isAdmin,
+          privacy: Privacy.public,
+          userId,
+        }
+      )
       .groupBy("test.id")
       .limit(pageSize)
-      .offset(offset)
-      .execute();
+      .offset(offset);
+
+    if (filter.name)
+      query.andWhere("LOWER(test.name) LIKE LOWER(:nameFilter)", {
+        nameFilter: `%${filter.name}%`,
+      });
+
+    if (filter.authored) query.andWhere("test.author_id = :userId", { userId });
+
+    if (filter.solved) query.andWhere("submission.id IS NOT NULL");
+    else if (filter.solved === false) query.andWhere("submission.id IS NULL");
+
+    const tests = await query.execute();
 
     const parsedTests = tests.reduce(
       (parsedTests: MaybeGradedTest[], test: any) => {
