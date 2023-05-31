@@ -25,7 +25,7 @@ interface MaybeGradedTest {
 
 interface TestResponse {
   tests: MaybeGradedTest[];
-  count: number;
+  totalItems: number;
 }
 
 interface WhereClause {
@@ -61,9 +61,7 @@ class GetTestsService {
           userId,
         }
       )
-      .groupBy("test.id")
-      .limit(pageSize)
-      .offset(offset);
+      .groupBy("test.id");
 
     if (filter.name)
       query.andWhere("LOWER(test.name) LIKE LOWER(:nameFilter)", {
@@ -75,7 +73,8 @@ class GetTestsService {
     if (filter.solved) query.andWhere("submission.id IS NOT NULL");
     else if (filter.solved === false) query.andWhere("submission.id IS NULL");
 
-    const tests = await query.execute();
+    const countTotal = await query.getCount();
+    const tests = await query.limit(pageSize).offset(offset).execute();
 
     const parsedTests = tests.reduce(
       (parsedTests: MaybeGradedTest[], test: any) => {
@@ -92,7 +91,7 @@ class GetTestsService {
       []
     );
 
-    return { tests: parsedTests, count: tests.length };
+    return { tests: parsedTests, totalItems: countTotal };
   }
 }
 

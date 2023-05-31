@@ -15,7 +15,7 @@ AppDataSource.initialize().then(() => {
 
   app.get("/ping", (req, res) => res.send("pong"));
 
-  app.use(errorMiddleware());
+  app.use(errorMiddleware);
 
   app.listen(PORT, () => console.log("Listening at port: " + PORT));
 });
