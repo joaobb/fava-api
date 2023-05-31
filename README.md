@@ -1,4 +1,3 @@
+# FAVA - API (Finite Automata Validation App) 🫘
 
-# Automator - API
-
-Automata testing and validating API for Automator platform.
+Automata testing and validating API for [FAVA](https://fava.vercel.app/) platform.
