@@ -1,10 +1,12 @@
-import { Automator } from "../libs/automator";
 import { testQuestionAnswerRepository } from "../repositories/testQuestionAnswerRepository";
 import { Test } from "../entities/Test";
 import { automataRepository } from "../repositories/automataRepository";
 import { ExtendsClass } from "../libs/ExtendsClass";
 import { BadRequestError } from "../helpers/http-errors";
 import { TestQuestionAnswer } from "../entities/TestQuestionAnswer";
+
+import { Automata } from "automata-logics-v2";
+import { TestAutomataEquivalenceService } from "./TestAutomataEquivalence";
 
 interface GradeTestRequest {
   test: Test;
@@ -30,27 +32,29 @@ class GradeTestService {
       let testQuestionAnswer: TestQuestionAnswer;
 
       if (submittedAutomata) {
-        const questionAutomataDefinition = await ExtendsClass.fetchJsonByUrl(
-          questionAutomata.source
-        );
-
-        const areEquivalent =
-          { equivalent: false } ||
-          Automator.testEquivalence(
-            questionAutomataDefinition,
-            submittedAutomata
-          );
+        const questionAutomataDefinition = (
+          await ExtendsClass.fetchJsonByUrl(questionAutomata.source)
+        )?.payload;
 
         const answerAutomataSource = await ExtendsClass.uploadJson(
           submittedAutomata
         );
+
+        const testAutomataEquivalenceService =
+          new TestAutomataEquivalenceService();
+
+        const areEquivalent = testAutomataEquivalenceService.execute({
+          questionAutomataPayload: questionAutomataDefinition,
+          submissionAutomataPayload: submittedAutomata,
+        });
+
         if (areEquivalent.equivalent) correctAnswersCounter++;
 
         testQuestionAnswer = testQuestionAnswerRepository.create({
           // testSubmission: test,
           questionAutomata,
           answerSource: answerAutomataSource,
-          correct: areEquivalent.equivalent,
+          correct: Boolean(areEquivalent.equivalent),
         });
       } else {
         // User did not submit the requested automata
