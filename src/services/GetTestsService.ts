@@ -1,7 +1,6 @@
 import { testRepository } from "../repositories/testRepository";
 import { Privacy } from "../enums/Privacy";
 import { TestSubmission } from "../entities/TestSubmission";
-import { ObjectLiteral } from "typeorm/common/ObjectLiteral";
 
 interface TestRequest {
   isAdmin: boolean;
@@ -10,6 +9,7 @@ interface TestRequest {
     name?: string;
     solved?: boolean;
     authored?: boolean;
+    classroom?: number;
   };
   pageSize?: number;
   offset?: number;
@@ -28,11 +28,6 @@ interface TestResponse {
   totalItems: number;
 }
 
-interface WhereClause {
-  where: string;
-  parameters?: ObjectLiteral;
-}
-
 class GetTestsService {
   async execute({
     isAdmin,
@@ -41,6 +36,7 @@ class GetTestsService {
     pageSize,
     offset,
   }: TestRequest): Promise<TestResponse> {
+    // TODO: Improve query by using leftJoinAndMap
     const query = testRepository
       .createQueryBuilder("test")
       .leftJoin(
@@ -50,14 +46,17 @@ class GetTestsService {
         { userId }
       )
       .select(
-        "test.id id, test.name name, test.createdAt created_at,test.privacy privacy"
+        "test.id id, test.name name, test.createdAt created_at,test.privacy" +
+          " privacy,test.classroom_id classroom_id"
       )
       .addSelect("MAX(submission.grade)::int", "grade")
       .where(
-        "(:isAdmin OR test.privacy = :privacy OR test.author_id = :userId)",
+        "(:isAdmin OR test.privacy = :privacy OR test.author_id = :userId OR" +
+          " test.privacy = :classroomPrivate)",
         {
           isAdmin,
           privacy: Privacy.public,
+          classroomPrivate: Privacy.classroomPrivate,
           userId,
         }
       )
@@ -69,6 +68,13 @@ class GetTestsService {
       });
 
     if (filter.authored) query.andWhere("test.author_id = :userId", { userId });
+    if (filter.classroom) {
+      // TODO: Prevent non enrolled users to have access to classroom
+      //  private exercises
+      query.andWhere("test.classroom_id = :classroomId", {
+        classroomId: filter.classroom,
+      });
+    }
 
     if (filter.solved) query.andWhere("submission.id IS NOT NULL");
     else if (filter.solved === false) query.andWhere("submission.id IS NULL");

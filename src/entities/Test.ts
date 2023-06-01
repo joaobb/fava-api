@@ -10,6 +10,7 @@ import {
 import { User } from "./User";
 import { BaseEntity } from "./BaseEntity";
 import { Automata } from "./Automata";
+import { Classroom } from "./ClassRoom";
 
 @Entity("tests")
 class Test extends BaseEntity {
@@ -35,6 +36,12 @@ class Test extends BaseEntity {
 
   @Column({ type: "text", default: "public" })
   privacy: string;
+
+  @ManyToOne(() => Classroom)
+  @JoinColumn({
+    name: "classroom_id",
+  })
+  classroomPrivate: Classroom;
 
   @DeleteDateColumn()
   deletedAt?: Date;

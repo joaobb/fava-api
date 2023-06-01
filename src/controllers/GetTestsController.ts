@@ -5,6 +5,9 @@ class GetTestsController {
   async handle(request: Request, response: Response) {
     const { isAdmin, userId, pageSize, offset, query } = request;
     const nameFilter = query.name ? String(query.name).trim() : undefined;
+    const classroomFilter = query.classroom
+      ? Number(query.classroom)
+      : undefined;
     const solvedFilter = query.solved ? query.solved === "true" : undefined;
     const authoredFilter = query.authored === "true";
 
@@ -16,6 +19,7 @@ class GetTestsController {
         name: nameFilter,
         solved: solvedFilter,
         authored: authoredFilter,
+        classroom: classroomFilter,
       },
       pageSize,
       offset,

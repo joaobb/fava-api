@@ -9,7 +9,7 @@ import { CreateTestController } from "../controllers/CreateTestController";
 import { DeleteTestController } from "../controllers/DeleteTestController";
 import { Test } from "../entities/Test";
 import { GetTestByIdController } from "../controllers/GetTestByIdController";
-import { GetTestsController } from "../controllers/GetTestController";
+import { GetTestsController } from "../controllers/GetTestsController";
 import { SubmitTestAnswerController } from "../controllers/SubmitTestAnswerController";
 import { GetUserAnswersController } from "../controllers/GetUserAnswersController";
 import { GetTestAnswerByIdController } from "../controllers/GetTestAnswerByIdController";
