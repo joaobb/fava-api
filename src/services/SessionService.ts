@@ -10,7 +10,8 @@ interface UserRequest {
 }
 
 interface UserResponse {
-  access_token: string;
+  userId: number;
+  accessToken: string;
   role: number;
 }
 
@@ -44,6 +45,6 @@ export class SessionService {
       }
     );
 
-    return { access_token: token, role: userRole };
+    return { userId: user.id, accessToken: token, role: userRole };
   }
 }
