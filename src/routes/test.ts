@@ -13,6 +13,7 @@ import { GetTestsController } from "../controllers/GetTestsController";
 import { SubmitTestAnswerController } from "../controllers/SubmitTestAnswerController";
 import { GetUserAnswersController } from "../controllers/GetUserAnswersController";
 import { GetTestAnswerByIdController } from "../controllers/GetTestAnswerByIdController";
+import { GetTestSubmissionsByIdController } from "../controllers/GetTestSubmissionsByIdController";
 
 const testsRouter = Router();
 
@@ -37,7 +38,18 @@ testsRouter.get(
   new GetUserAnswersController().handle
 );
 
-testsRouter.get("/:testId", new GetTestByIdController().handle);
+testsRouter.get(
+  "/:testId/submissions",
+  ensuredAuthenticated(),
+  authorOrAdminOnly("testId", Test),
+  new GetTestSubmissionsByIdController().handle
+);
+
+testsRouter.get(
+  "/:testId",
+  ensuredAuthenticated(),
+  new GetTestByIdController().handle
+);
 
 testsRouter.put(
   "/:testId",
