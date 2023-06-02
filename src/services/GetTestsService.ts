@@ -1,6 +1,8 @@
 import { testRepository } from "../repositories/testRepository";
 import { Privacy } from "../enums/Privacy";
 import { TestSubmission } from "../entities/TestSubmission";
+import { User } from "../entities/User";
+import { Brackets } from "typeorm";
 
 interface TestRequest {
   isAdmin: boolean;
@@ -21,6 +23,9 @@ interface MaybeGradedTest {
   createdAt: Date;
   privacy: keyof typeof Privacy;
   grade: number;
+  authorName: string;
+  submissionsCount: number;
+  systemGradeAverage: number;
 }
 
 interface TestResponse {
@@ -37,59 +42,81 @@ class GetTestsService {
     offset,
   }: TestRequest): Promise<TestResponse> {
     // TODO: Improve query by using leftJoinAndMap
-    const query = testRepository
+
+    // isAdmin || public || (private && author) || (classroomPrivate && userId is enrolled in the class)
+    const testQuery = await testRepository
       .createQueryBuilder("test")
-      .leftJoin(
-        TestSubmission,
+      .andWhere(
+        new Brackets((qb) =>
+          qb
+            .where(":isAdmin", { isAdmin })
+            .orWhere("test.privacy = 'public'")
+            .orWhere("test.privacy = 'private' AND test.author_id = :userId", {
+              userId,
+            })
+            .orWhere(
+              "test.privacy = 'classroomPrivate' AND test.classroom_id = :classroomId",
+              {
+                classroomId: filter.classroom,
+              }
+            )
+        )
+      )
+      .leftJoinAndSelect(
+        (qb) =>
+          qb
+            .select("submission.test_id t_id")
+            .addSelect("MAX(submission.grade)::int user_grade")
+            .from(TestSubmission, "submission")
+            .where("submission.taker_id = :userId", { userId })
+            .groupBy("submission.test_id"),
+        "grade",
+        "test.id = grade.t_id"
+      )
+      .leftJoinAndSelect(
+        (qb) =>
+          qb
+            .select("submission.test_id t_id")
+            .addSelect("COUNT(submission.grade)::int submissions_count")
+            .addSelect("AVG(submission.grade)::int submissions_avg")
+            .from(TestSubmission, "submission")
+            .groupBy("submission.test_id"),
         "submission",
-        "test.id = submission.test AND submission.taker_id = :userId",
-        { userId }
+        "test.id = submission.t_id"
       )
-      .select(
-        "test.id id, test.name name, test.createdAt created_at,test.privacy" +
-          " privacy,test.classroom_id classroom_id"
-      )
-      .addSelect("MAX(submission.grade)::int", "grade")
-      .where(
-        "(:isAdmin OR test.privacy = :privacy OR test.author_id = :userId OR" +
-          " test.privacy = :classroomPrivate)",
-        {
-          isAdmin,
-          privacy: Privacy.public,
-          classroomPrivate: Privacy.classroomPrivate,
-          userId,
-        }
-      )
-      .groupBy("test.id");
+      .leftJoinAndSelect(User, "author", "test.author_id = author.id");
 
     if (filter.name)
-      query.andWhere("LOWER(test.name) LIKE LOWER(:nameFilter)", {
+      testQuery.andWhere("test.name ILIKE :nameFilter", {
         nameFilter: `%${filter.name}%`,
       });
 
-    if (filter.authored) query.andWhere("test.author_id = :userId", { userId });
+    if (filter.authored)
+      testQuery.andWhere("test.author_id = :userId", { userId });
     if (filter.classroom) {
-      // TODO: Prevent non enrolled users to have access to classroom
-      //  private exercises
-      query.andWhere("test.classroom_id = :classroomId", {
+      // TODO: Prevent non enrolled users to have access to classroom private exercises
+      testQuery.andWhere("test.classroom_id = :classroomId", {
         classroomId: filter.classroom,
       });
     }
 
-    if (filter.solved) query.andWhere("submission.id IS NOT NULL");
-    else if (filter.solved === false) query.andWhere("submission.id IS NULL");
+    if (filter.solved) testQuery.andWhere("grade.t_id IS NOT NULL");
+    else if (filter.solved === false) testQuery.andWhere("grade.t_id IS NULL");
 
-    const countTotal = await query.getCount();
-    const tests = await query.limit(pageSize).offset(offset).execute();
+    const countTotal = await testQuery.getCount();
+    const tests = await testQuery.limit(pageSize).offset(offset).execute();
 
     const parsedTests = tests.reduce(
-      (parsedTests: MaybeGradedTest[], test: any) => {
+      (parsedTests: MaybeGradedTest[], item: any) => {
         parsedTests.push({
-          id: test.id,
-          name: test.name,
-          createdAt: test.created_at,
-          privacy: test.privacy,
-          grade: test.grade,
+          id: item.test_id,
+          name: item.test_name,
+          createdAt: item.test_created_at,
+          privacy: item.test_privacy,
+          grade: item.user_grade,
+          authorName: item.author_name,
+          submissionsCount: item.submissions_count,
+          systemGradeAverage: item.submissions_avg,
         });
 
         return parsedTests;
