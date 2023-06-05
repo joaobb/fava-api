@@ -2,10 +2,11 @@ import "express-async-errors";
 import express from "express";
 import { routes } from "./routes";
 import { AppDataSource } from "./data-source";
-import { errorMiddleware } from "./middleware/error";
 import cors from "cors";
 
+console.log("> Connecting to database...");
 AppDataSource.initialize().then(() => {
+  console.log("> Connected to database ✔️");
   const PORT = process.env.APP_PORT;
   const app = express();
 
@@ -17,5 +18,5 @@ AppDataSource.initialize().then(() => {
 
   // app.use(errorMiddleware);
 
-  app.listen(PORT, () => console.log("Listening at port: " + PORT));
+  app.listen(PORT, () => console.log(`> Running server on port: ${PORT} 🫘`));
 });

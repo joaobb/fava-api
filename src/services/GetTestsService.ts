@@ -3,6 +3,8 @@ import { Privacy } from "../enums/Privacy";
 import { TestSubmission } from "../entities/TestSubmission";
 import { User } from "../entities/User";
 import { Brackets } from "typeorm";
+import { Classroom } from "../entities/ClassRoom";
+// import { classroomRepository } from "../repositories/classroomRepository";
 
 interface TestRequest {
   isAdmin: boolean;
@@ -63,6 +65,11 @@ class GetTestsService {
         )
       )
       .leftJoinAndSelect(
+        Classroom,
+        "classroom",
+        "(test.classroom_id IS NOT NULL) AND (test.classroom_id = classroom.id)"
+      )
+      .leftJoinAndSelect(
         (qb) =>
           qb
             .select("submission.test_id t_id")
@@ -94,10 +101,21 @@ class GetTestsService {
     if (filter.authored)
       testQuery.andWhere("test.author_id = :userId", { userId });
     if (filter.classroom) {
-      // TODO: Prevent non enrolled users to have access to classroom private exercises
       testQuery.andWhere("test.classroom_id = :classroomId", {
         classroomId: filter.classroom,
       });
+      // Prevent non enrolled users to have access to classroom private tests
+      // .andWhereExists(
+      //   classroomRepository
+      //     .createQueryBuilder("classroom")
+      //     .where("classroom.id = test.classroom_id")
+      //     .leftJoinAndMapMany(
+      //       "classroom.enrollees",
+      //       "classroom.enrollees",
+      //       "enrollee"
+      //     )
+      //     .andWhere("enrollee.id = :userId", { userId })
+      // );
     }
 
     if (filter.solved) testQuery.andWhere("grade.t_id IS NOT NULL");
