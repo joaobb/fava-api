@@ -42,6 +42,14 @@ class GetClassroomsService {
     }
 
     const [classrooms, count] = await classroomRepository.findAndCount({
+      select: {
+        mentor: {
+          name: true,
+        },
+        enrollees: {
+          id: false,
+        },
+      },
       where: whereClause,
       relations: { mentor: true, enrollees: true },
       skip: offset,
