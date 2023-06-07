@@ -31,7 +31,13 @@ cd fava-api
 Once inside the project directory, use Yarn to install the required dependencies. Run the following command:
 
 ```bash
-yarn install # or npm run install
+yarn
+```
+
+Using npm:
+
+```bash
+npm install
 ```
 
 This will download and install all the necessary Node.js modules specified in the `package.json` file.
