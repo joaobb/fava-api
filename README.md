@@ -55,7 +55,7 @@ cp .env.deploy .env
 
 If you're using a local PostgreSQL database, you'll need to run migrations and seed the initial data.
 
-To run the migrations, use the following command:
+To run the migrations, use the following commands:
 
 ```bash
 yarn migrate:generate
@@ -64,7 +64,7 @@ yarn migrate:run
 
 This command will create the necessary database tables.
 
-To seed the initial data, run the following commands:
+To seed the initial data, run the following command:
 
 ```bash
 yarn seed
