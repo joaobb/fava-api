@@ -7,7 +7,7 @@ Automata testing and validating API for [FAVA](https://fava.vercel.app/) platfor
 Before you begin, make sure you have the following prerequisites installed on your system:
 
 - Node.js (version 12 or higher)
-- Yarn package manager
+- Node.JS package manager (yarn or npm)
 - PostgreSQL (locally installed or accessible)
 
 ## Step 1: Clone the Repository
