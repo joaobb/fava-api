@@ -53,9 +53,9 @@ Install Docker on your machine by following the official Docker installation gui
 
 Open a terminal and run the following command to start a PostgreSQL container:
 
-bash
-Copy code
+```bash
 docker run --name fava-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+```
 This command will create a new PostgreSQL container named fava-postgres with the specified password (mysecretpassword). The container will be accessible on port 5432.
 
 ### Configuring the Database
