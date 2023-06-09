@@ -8,7 +8,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
 
 - Node.js (version 12 or higher)
 - Node.JS package manager (yarn or npm)
-- PostgreSQL (locally installed or accessible)
+- PostgreSQL server
 
 ## Step 1: Clone the Repository
 
@@ -44,22 +44,28 @@ This will download and install all the necessary Node.js modules specified in th
 
 ## Step 3: Set up the Database
 
-This API requires a PostgreSQL database server. You can either run your own, locally, by using Docker for example, or use an existing database created and deployed (it might be unavailable when you try to use it). If you reather use the second option, it's credentials are declared in the `.env.deploy` file.
+This API requires a PostgreSQL database server, that could be created using Docker, for example.
+
+### Using Docker (Optional)
+If you choose to use Docker, follow these steps to set up a PostgreSQL container:
+
+Install Docker on your machine by following the official Docker installation guide for your operating system.
+
+Open a terminal and run the following command to start a PostgreSQL container:
+
+bash
+Copy code
+docker run --name fava-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+This command will create a new PostgreSQL container named fava-postgres with the specified password (mysecretpassword). The container will be accessible on port 5432.
 
 ### Configuring the Database
 
-If you chose to use a local database, run the following command then replace its variables values to match with your database configuration:
+Now run the following command and then replace its variables values to match with your database configuration:
 ```bash
 cp .env.example .env
 ```
-Otherwise, for using the deployed database, run this command, and you're ready to go!
-```bash
-cp .env.deploy .env
-```
 
-## Step 4: Run Migrations and Seed Data (Optional)
-
-If you're using a local PostgreSQL database, you'll need to run migrations and seed the initial data.
+## Step 4: Run Migrations and Seed Data
 
 To run the migrations, use the following commands:
 
