@@ -65,7 +65,33 @@ Now run the following command and then replace its variables values to match wit
 cp .env.example .env
 ```
 
-## Step 4: Run Migrations and Seed Data
+## Step 4: Get JSON WebStorage Keys
+
+Get yourself a API key from [Extended Class](https://extendsclass.com/json-storage.html).
+
+This will be need for storaging automata payloads.
+
+After creating it, paste its result on .env's `EXTENDS_CLASS_API_KEY`
+
+## Step 5: Generate a JWT Secret
+
+To help hash users passwords and make it database storable a JWT secret is needed.
+
+To create it, run the following command and paste its result on .env's `JWT_SECRET`
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## Step 6: Set a admin account
+
+To create a admin account and have full access of the system, you must set .env's `ADMIN_EMAIL` and `ADMIN_PASSWORD` with the wanted email and password. 
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## Step 7: Run Migrations and Seed Data
 
 To run the migrations, use the following commands:
 
@@ -84,7 +110,7 @@ yarn seed
 
 This will populate the database with some sample data.
 
-## Step 5: Start the API
+## Step 8: Start the API
 
 Finally, you can start the fava-api server by running the following command:
 
