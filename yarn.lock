@@ -216,9 +216,9 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-"automata-logics-v2@https://github.com/joaobb/AutomataLogics":
-  version "1.0.0"
-  resolved "https://github.com/joaobb/AutomataLogics#eda50535da6f1f7a362b4d2ef813eadfcc684cb3"
+"automata-logics-v2@https://github.com/joaobb/fava-logics":
+  version "1.0.2"
+  resolved "https://github.com/joaobb/fava-logics#bf47d9401e3f6f51cde431794304776ae4542ae0"
   dependencies:
     lodash.uniq "^4.5.0"
     lodash.uniqby "^4.7.0"
