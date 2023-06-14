@@ -32,10 +32,12 @@ class TestAutomataEquivalenceService {
     submissionAutomataPayload,
   }: TestAutomataEquivalenceRequest): TestAutomataEquivalenceResponse {
     const parsedQuestionAutomata = parseGraphToAutomata(
-      questionAutomataPayload
+      questionAutomataPayload,
+      "a1-"
     );
     const parsedSubmittedAutomata = parseGraphToAutomata(
-      submissionAutomataPayload
+      submissionAutomataPayload,
+      "a2-"
     );
 
     const questionAutomata = new Automata(
