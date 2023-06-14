@@ -23,6 +23,6 @@ export class SignInService {
 
     await userRepository.save(user);
 
-    return { id: user.id, email: user.email, name: user.email };
+    return { id: user.id, email: user.email, name: user.name };
   }
 }

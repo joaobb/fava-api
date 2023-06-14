@@ -42,6 +42,6 @@ export class CreateUserService {
 
     await userRepository.save(user);
 
-    return { id: user.id, email: user.name, name: user.email };
+    return { id: user.id, name: user.name, email: user.email };
   }
 }
